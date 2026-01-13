@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getMe } from "./store/slices/authSlice";
 import { addNotification } from "./store/slices/notificationsSlice";
+import { updateBidStatus } from "./store/slices/bidsSlice";
 import { initSocket, getSocket } from "./services/socket";
 
 // Components
@@ -33,6 +34,7 @@ function App() {
 
       // Listen for hire notifications
       socket.on("hired", (data) => {
+        // Show notification
         dispatch(
           addNotification({
             message: data.message,
@@ -40,6 +42,16 @@ function App() {
             gigTitle: data.gigTitle,
           })
         );
+
+        // Update bid status in real-time
+        if (data.bidId) {
+          dispatch(
+            updateBidStatus({
+              bidId: data.bidId,
+              status: "hired",
+            })
+          );
+        }
       });
 
       return () => {
