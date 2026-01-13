@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* Dark theme base styles */
+body {
+  background-color: rgb(17 24 39);
+  color: rgb(243 244 246);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: rgb(2 132 199);
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: rgb(3 105 161);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: rgb(55 65 81);
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: rgb(75 85 99);
+}
+
+.btn-danger {
+  background-color: rgb(220 38 38);
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+  background-color: rgb(185 28 28);
+}
+
+/* Input field styles */
+.input-field {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: rgb(31 41 55);
+  border: 1px solid rgb(55 65 81);
+  border-radius: 0.5rem;
+  color: rgb(243 244 246);
+}
+
+.input-field::placeholder {
+  color: rgb(156 163 175);
+}
+
+.input-field:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(14 165 233);
+  border-color: transparent;
+}
+
+/* Card styles */
+.card {
+  background-color: rgb(31 41 55);
+  border: 1px solid rgb(55 65 81);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* Badge styles */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.badge-open {
+  background-color: rgb(20 83 45);
+  color: rgb(134 239 172);
+}
+
+.badge-assigned {
+  background-color: rgb(30 58 138);
+  color: rgb(147 197 253);
+}
+
+.badge-pending {
+  background-color: rgb(113 63 18);
+  color: rgb(253 224 71);
+}
+
+.badge-hired {
+  background-color: rgb(20 83 45);
+  color: rgb(134 239 172);
+}
+
+.badge-rejected {
+  background-color: rgb(127 29 29);
+  color: rgb(252 165 165);
+}
+
+/* Utility for line clamping */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
