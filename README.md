@@ -14,13 +14,14 @@ Modern React-based frontend for the GigFlow freelance marketplace platform.
 
 ## 📋 Features
 
-- 🔐 JWT-based authentication with protected routes
+- 🔐 JWT-based authentication (Cookie + Authorization header fallback)
 - 💼 Dual role system (Client & Freelancer)
-- ⚡ Real-time notifications
-- 🎨 Modern dark-themed UI
+- ⚡ Real-time notifications and bid status updates
+- 🎨 Modern dark-themed UI with glassmorphism
 - 🔍 Gig search functionality
-- 📊 User dashboard
+- 📊 User dashboard with live updates
 - 📱 Responsive design
+- ⏱️ Cold start loader for free tier backends
 
 ## 🛠️ Local Development Setup
 
@@ -48,7 +49,6 @@ Modern React-based frontend for the GigFlow freelance marketplace platform.
 3. **Create environment file**:
 
    ```bash
-   # Create .env file in the frontend directory
    touch .env
    ```
 
@@ -78,15 +78,10 @@ Modern React-based frontend for the GigFlow freelance marketplace platform.
 
 ### Deploy to Vercel (Recommended - Free)
 
-1. **Install Vercel CLI** (optional):
+1. **Push code to GitHub**
 
-   ```bash
-   npm i -g vercel
-   ```
+2. **Deploy via Vercel Dashboard**:
 
-2. **Deploy via GitHub**:
-
-   - Push your code to GitHub
    - Go to [vercel.com](https://vercel.com)
    - Click "New Project"
    - Import your GitHub repository
@@ -96,55 +91,32 @@ Modern React-based frontend for the GigFlow freelance marketplace platform.
      - **Build Command**: `npm run build`
      - **Output Directory**: `dist`
    - Add environment variable:
-     - `VITE_API_URL` = `<your-backend-url>/api`
+     - `VITE_API_URL` = `https://your-backend.onrender.com/api`
    - Click "Deploy"
 
-3. **Deploy via CLI**:
+3. **Or deploy via CLI**:
    ```bash
+   npm i -g vercel
    cd frontend
    vercel
    ```
 
 ### Deploy to Netlify (Free)
 
-1. **Build the project**:
-
-   ```bash
-   npm run build
-   ```
-
-2. **Deploy via Netlify CLI**:
-
-   ```bash
-   npm install -g netlify-cli
-   netlify deploy --prod
-   ```
-
-3. **Or use Netlify UI**:
-
-   - Go to [netlify.com](https://netlify.com)
-   - Drag and drop the `dist` folder
-   - Or connect your GitHub repository
-
-4. **Configure**:
+1. **Configure**:
    - Build command: `npm run build`
    - Publish directory: `dist`
    - Environment variables:
-     - `VITE_API_URL` = `<your-backend-url>/api`
+     - `VITE_API_URL` = `https://your-backend.onrender.com/api`
 
 ### Deploy to Cloudflare Pages (Free)
 
-1. **Push to GitHub**
-
-2. **Connect to Cloudflare Pages**:
-   - Go to [pages.cloudflare.com](https://pages.cloudflare.com)
-   - Connect your GitHub repository
-   - Configure:
-     - **Build command**: `npm run build`
-     - **Build output directory**: `dist`
-     - **Root directory**: `frontend`
-   - Add environment variable:
-     - `VITE_API_URL` = `<your-backend-url>/api`
+1. **Configure**:
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+   - **Root directory**: `frontend`
+   - Environment variable:
+     - `VITE_API_URL` = `https://your-backend.onrender.com/api`
 
 ## 🔧 Configuration
 
@@ -156,7 +128,7 @@ Modern React-based frontend for the GigFlow freelance marketplace platform.
 
 ### Important Notes
 
-- All environment variables must be prefixed with `VITE_` to be accessible in the app
+- All environment variables must be prefixed with `VITE_` to be accessible
 - Update `VITE_API_URL` to point to your deployed backend URL in production
 - The backend URL should NOT include a trailing slash
 
@@ -175,17 +147,19 @@ frontend/
 │   │   ├── CreateGig.jsx
 │   │   ├── Navbar.jsx
 │   │   ├── Notification.jsx
+│   │   ├── ColdStartLoader.jsx    # New: Cold start indicator
 │   │   └── ProtectedRoute.jsx
 │   ├── services/
-│   │   ├── api.js          # Axios configuration
-│   │   └── socket.js       # Socket.io client
+│   │   ├── api.js                 # Axios + Authorization header
+│   │   └── socket.js              # Socket.io client
 │   ├── store/
 │   │   ├── slices/
-│   │   │   ├── authSlice.js
+│   │   │   ├── authSlice.js       # Auth + localStorage
 │   │   │   ├── gigsSlice.js
-│   │   │   ├── bidsSlice.js
-│   │   │   └── notificationsSlice.js
-│   │   └── index.js        # Redux store
+│   │   │   ├── bidsSlice.js       # Real-time bid updates
+│   │   │   ├── notificationsSlice.js
+│   │   │   └── coldStartSlice.js  # New: Cold start detection
+│   │   └── index.js
 │   ├── App.jsx
 │   ├── main.jsx
 │   └── index.css
@@ -195,44 +169,74 @@ frontend/
 └── vite.config.js
 ```
 
-## 🔐 Authentication Flow
+## 🔐 Authentication
 
-1. User registers/logs in via `/login` or `/register`
-2. Backend returns JWT token in HttpOnly cookie
-3. Token is automatically sent with each request
-4. Protected routes check authentication status
-5. Unauthenticated users are redirected to login
+### How It Works
+
+1. User logs in → Backend returns JWT token
+2. Token stored in **localStorage** (for Authorization header)
+3. Token also set as **HttpOnly cookie** (fallback)
+4. Every API request includes `Authorization: Bearer <token>` header
+5. Protected routes check authentication status
+
+### Why Both Cookie and Header?
+
+- **Cookies**: More secure (HttpOnly), but blocked by some browsers cross-origin
+- **Authorization Header**: Works reliably cross-origin, stored in localStorage
+- **Fallback**: Backend accepts both, header takes priority
 
 ## 🔄 State Management
 
-The app uses Redux Toolkit with the following slices:
+Redux Toolkit slices:
 
-- **authSlice** - User authentication state
+- **authSlice** - User authentication + token management
 - **gigsSlice** - Gig listings and management
-- **bidsSlice** - Bid management
+- **bidsSlice** - Bid management + real-time updates
 - **notificationsSlice** - Real-time notifications
+- **coldStartSlice** - Cold start detection for free tier backends
+
+## ⚡ Real-Time Features
+
+### Socket.io Integration
+
+- **Hire Notifications**: Instant toast when freelancer gets hired
+- **Bid Status Updates**: Badge changes from "pending" → "hired" in real-time
+- **No Polling**: Uses WebSocket for efficient real-time updates
+
+### Cold Start Loader
+
+- Detects when backend is waking up (free tier hosting)
+- Shows countdown timer (up to 50 seconds)
+- Improves UX for Render/Railway free tier deployments
 
 ## 🎨 Styling
 
 - **Tailwind CSS** for utility-first styling
-- **Dark theme** by default
+- **Dark theme** by default with vibrant accents
+- **Glassmorphism** effects for modern look
 - **Responsive design** for mobile and desktop
-- Custom components with consistent design system
+- **Smooth animations** for better UX
 
 ## 🐛 Troubleshooting
 
 ### API Connection Issues
 
-If you see CORS errors:
+**CORS errors:**
 
 - Ensure backend is running
 - Check `VITE_API_URL` in `.env`
-- Verify backend CORS configuration includes your frontend URL
+- Verify backend CORS includes your frontend URL
+
+**401 Unauthorized:**
+
+- Check if token exists in localStorage
+- Try logging out and logging in again
+- Verify backend is deployed with latest code
 
 ### Build Errors
 
 ```bash
-# Clear node_modules and reinstall
+# Clear and reinstall
 rm -rf node_modules package-lock.json
 npm install
 ```
@@ -240,8 +244,8 @@ npm install
 ### Socket.io Connection Issues
 
 - Ensure backend Socket.io server is running
-- Check that the Socket.io client is connecting to the correct backend URL
-- Verify CORS settings on the backend
+- Check backend URL in socket.js
+- Verify CORS settings on backend
 
 ## 📝 License
 
@@ -249,11 +253,7 @@ MIT
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📧 Support
-
-For issues and questions, please open an issue in the repository.
+Contributions welcome! Please open an issue or submit a Pull Request.
 
 ---
 
