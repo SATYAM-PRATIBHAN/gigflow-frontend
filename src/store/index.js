@@ -3,12 +3,16 @@ import authReducer from "./slices/authSlice";
 import gigsReducer from "./slices/gigsSlice";
 import bidsReducer from "./slices/bidsSlice";
 import notificationsReducer from "./slices/notificationsSlice";
+import coldStartReducer from "./slices/coldStartSlice";
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     gigs: gigsReducer,
     bids: bidsReducer,
     notifications: notificationsReducer,
+    coldStart: coldStartReducer,
   },
 });
+
+export default store;

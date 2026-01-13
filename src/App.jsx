@@ -8,6 +8,7 @@ import { initSocket, getSocket } from "./services/socket";
 // Components
 import Navbar from "./components/Navbar";
 import Notification from "./components/Notification";
+import ColdStartLoader from "./components/ColdStartLoader";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -55,6 +56,7 @@ function App() {
       <div className="min-h-screen bg-gray-900">
         <Navbar />
         <Notification />
+        <ColdStartLoader />
 
         <Routes>
           <Route path="/" element={<GigFeed />} />
