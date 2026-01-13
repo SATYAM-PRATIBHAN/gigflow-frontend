@@ -1,3 +1,6 @@
+// Temporary debugging utility - Add to frontend
+// Place this in src/services/api.js temporarily to debug
+
 import axios from "axios";
 import store from "../store";
 import {
@@ -14,12 +17,6 @@ const api = axios.create({
   },
 });
 
-// DEBUG: Log API configuration
-console.log("🔧 API Configuration:", {
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  withCredentials: true,
-});
-
 // Request interceptor to track request start time
 api.interceptors.request.use(
   (config) => {
@@ -27,8 +24,9 @@ api.interceptors.request.use(
     console.log("🔵 API Request:", {
       url: config.url,
       method: config.method,
-      fullURL: `${config.baseURL}${config.url}`,
+      baseURL: config.baseURL,
       withCredentials: config.withCredentials,
+      headers: config.headers,
     });
 
     // Start tracking the request
@@ -56,7 +54,8 @@ api.interceptors.response.use(
     console.log("✅ API Response:", {
       url: response.config.url,
       status: response.status,
-      success: response.data?.success,
+      data: response.data,
+      headers: response.headers,
     });
 
     // Clear the cold start timer
@@ -73,8 +72,10 @@ api.interceptors.response.use(
     console.error("❌ API Error:", {
       url: error.config?.url,
       status: error.response?.status,
-      message: error.response?.data?.message || error.message,
-      fullError: error.response?.data,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      headers: error.response?.headers,
+      message: error.message,
     });
 
     // Clear the cold start timer
