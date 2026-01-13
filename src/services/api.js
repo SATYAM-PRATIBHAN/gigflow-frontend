@@ -31,6 +31,13 @@ api.interceptors.request.use(
       withCredentials: config.withCredentials,
     });
 
+    // Add Authorization header with token from localStorage
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log("🔑 Added Authorization header");
+    }
+
     // Start tracking the request
     store.dispatch(startColdStartDetection());
 
